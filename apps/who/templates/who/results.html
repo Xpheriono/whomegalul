@@ -1,0 +1,20 @@
+<!doctype html>
+
+{% load static %}
+
+<html lang="en">
+<head name="results-meta">
+    <meta charset="utf-8">
+    <meta name="description" content="Search Results For Twitch User">
+    <meta name="author" content="xpherion">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+{% for user in users %}
+<tr name="user-table">
+    <td>{{user}}</td>
+
+</tr>
+{% endfor %}
+
+</html>
