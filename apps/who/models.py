@@ -1,4 +1,6 @@
 import logging
+import requests
+import os
 
 from uuid import uuid4
 
@@ -6,20 +8,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 
 logger = logging.getLogger(__name__)
-
-class WhoUser(AbstractBaseUser):
-    uid = models.UUIDField(primary_key=True, max_length=255, default=uuid4)
-    password = None
-
-    USERNAME_FIELD = "uid"
-    REQUIRED_FIELDS = []
-
-    def __str__(self):
-        return self.uid
-
-    class Meta:
-        verbose_name = "custom auth user"
-        #db_table = "auth_user"
 
 # UserInfo model to store results from Twitch API get user info calls
 class UserInfo(models.Model):
@@ -41,10 +29,25 @@ class UserInfo(models.Model):
     #def get_absolute_url(self):
     #    return reverse("model_detail", kwargs={"pk": self.pk})
     
-
     class Meta:
         verbose_name = "user info"
 
+# not currently in use
+class WhoUser(AbstractBaseUser):
+    uid = models.UUIDField(primary_key=True, max_length=255, default=uuid4)
+    password = None
+
+    USERNAME_FIELD = "uid"
+    REQUIRED_FIELDS = []
+
+    def __str__(self):
+        return self.uid
+
+    class Meta:
+        verbose_name = "custom auth user"
+        #db_table = "auth_user"
+
+# not currently in use
 class OAuthToken(models.Model):
     user_id = models.OneToOneField(WhoUser, on_delete=models.CASCADE, primary_key=True)
     token = models.TextField()
