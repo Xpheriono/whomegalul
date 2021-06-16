@@ -10,11 +10,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
-{% for user in users %}
-<tr name="user-table">
-    <td>{{user}}</td>
+<h1>{{ userinfo.login }}</h2>
+{{ userinfo.info.id }} <br>
+{{ userinfo.info.description }} <br>
+{{ userinfo.info.created_at }} <br>
+{{ userinfo.info.profile_image_url }} <br>
 
-</tr>
-{% endfor %}
 
 </html>
