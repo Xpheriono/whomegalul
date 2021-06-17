@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
-from django.forms.models import model_to_dict
+from django.contrib import messages
 
 from .models import UserInfo
 from .services import TwitchAPI
@@ -38,6 +38,9 @@ def verify_query(request):
     except UserInfo.DoesNotExist as error:
         twitch = TwitchAPI()
         q_user = twitch.get_user(q).json()
-        if q_user['data']:
+        if q_user and 'data' in q_user and q_user['data']:
             UserInfo.objects.create(info=q_user, login=q)
-        return HttpResponseRedirect(reverse('results', kwargs={'login': q}))
+            return HttpResponseRedirect(reverse('results', kwargs={'login': q}))
+        else:
+            messages.error(request, 'Unable to retrieve any results for {}'.format(q))
+            return redirect('index')
