@@ -8,13 +8,26 @@
     <meta name="description" content="Search Results For Twitch User">
     <meta name="author" content="xpherion">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'who/results.css' %}"/>
 </head>
 
-<h1>{{ userinfo.login }}</h2>
-{{ userinfo.info.id }} <br>
-{{ userinfo.info.description }} <br>
-{{ userinfo.info.created_at }} <br>
-{{ userinfo.info.profile_image_url }} <br>
-
+<h1>{{ userinfo.info.display_name }}</h2>
+<ul title="userinfo-list">
+    <li title="list-item">
+        <b>User ID:</b> {{ userinfo.info.id }} <br>
+    </li>
+    <li>
+        <b>Description:</b> {{ userinfo.info.description }} <br>
+    </li>
+    <li>
+        <b>Viewers:</b> {{ userinfo.info.view_count }} <br>
+    </li>
+    <li>
+        <b>Date Created:</b> {{ userinfo.info.created_at }} <br>
+    </li>
+</ul>
+<a href="{{ userinfo.info.user_page }}" target="_blank">
+    <img src="{{ userinfo.info.profile_image_url }}" alt="No profile image" width="300" height="300">
+</a>
 
 </html>
