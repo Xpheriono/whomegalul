@@ -14,4 +14,13 @@
     <input name="q" type="text" placeholder="Twitch Username">
     <input name="search-box-button" type="submit" value="Search">
 </form>
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 </html>
