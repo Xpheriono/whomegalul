@@ -1,8 +1,7 @@
 import logging
-import requests
-import os
 
 from uuid import uuid4
+from datetime import datetime
 
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
@@ -15,19 +14,22 @@ class UserInfo(models.Model):
     uid = models.PositiveIntegerField(unique=True, default=None)
     login = models.CharField(max_length=30, primary_key=True)
 
+    # 2008-06-14T06:12:52.461775Z 
     # twitch results return as dict->list->dict so get rid of the first dict and the list
     def save(self, *args, **kwargs):
         self.info = self.info['data'][0]
         self.uid = int(self.info['id'])
         self.login = self.info['login']
-        logger.info('saving info as {}'.format(self.info))
+        created_at = datetime.strptime(self.info['created_at'],'%Y-%m-%dT%H:%M:%S.%f%z')
+        self.info['created_at'] = created_at.strftime('%b %d %Y %I:%M %p')
+        self.info['user_page'] = 'https://twitch.tv/' + self.login
+        self.info['view_count'] = '{:,}'.format(self.info['view_count'])
+        
+        logger.debug('saving info as {}'.format(self.info))
         super().save(*args, **kwargs)
 
     def __str__(self):
         return str(self.login)
-
-    #def get_absolute_url(self):
-    #    return reverse("model_detail", kwargs={"pk": self.pk})
     
     class Meta:
         verbose_name = "user info"
