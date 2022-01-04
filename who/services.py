@@ -13,11 +13,6 @@ class TwitchAPI:
 
     def __init__(self):
         logger.info('Twitch connection initiating')
-        self.tokens = cache.get('access_token')
-        # check if authorized, if not then authorize
-        if self.tokens == None:
-            if not self.__authorize_client():
-                self.__handle_auth_error()
 
     def __authorize_client(self, force=False):
         data = {
@@ -25,7 +20,7 @@ class TwitchAPI:
             'client_secret': os.environ['SECRET_WHO'],
             'grant_type': 'client_credentials'
         }
-
+        logger.info('authorizing client...')
         try:
             rsp = requests.post(self.id_url, data=data)
             rsp.raise_for_status()
@@ -35,6 +30,8 @@ class TwitchAPI:
                     cache.get('access_token')['expires_in']
                 ))
                 return True
+            else:
+                logger.error('There was an error authenticating')
         except requests.exceptions.Timeout as error:
             logger.error('Timed out while waiting for Twitch response')
         except requests.exceptions.RequestException as error:
@@ -60,10 +57,14 @@ class TwitchAPI:
         return cache.add('access_token', token) # returns True if token does not exist already
 
     def get_user(self, username):
-        token = self.tokens['token']
-        if not token:
-            self.__authorize_client()
-            token = self.tokens['token']
+        # Retrieve the access token from cache and verify client is authorized
+        tokens = cache.get('access_token')
+        if not tokens:
+            if not self.__authorize_client():
+                self.__handle_auth_error()
+        token = tokens['token']
+
+        # Build the HTTP request
         url = self.helix_url + 'users/'
         headers = {
             'Authorization': 'Bearer ' + token,
@@ -75,6 +76,7 @@ class TwitchAPI:
 
         return self.__make_request(url, headers, params)
 
+    # Returns None on failure to make request
     def __make_request(self, url, headers, payload):
         try:
             rsp = requests.get(url, headers=headers, params=payload)
