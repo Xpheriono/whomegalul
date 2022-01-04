@@ -5,13 +5,14 @@ import os
 from django.core.cache import cache
 from requests.api import request # 'default' cache from settings
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('twitchLog')
 
 class TwitchAPI:
     helix_url = 'https://api.twitch.tv/helix/'
     id_url = 'https://id.twitch.tv/oauth2/token'
 
     def __init__(self):
+        logger.info('Twitch connection initiating')
         self.tokens = cache.get('access_token')
         # check if authorized, if not then authorize
         if self.tokens == None:

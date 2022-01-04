@@ -20,7 +20,7 @@ class UserInfo(models.Model):
         self.info = self.info['data'][0]
         self.uid = int(self.info['id'])
         self.login = self.info['login']
-        created_at = datetime.strptime(self.info['created_at'],'%Y-%m-%dT%H:%M:%S.%f%z')
+        created_at = datetime.strptime(self.info['created_at'],'%Y-%m-%dT%H:%M:%S%z')
         self.info['created_at'] = created_at.strftime('%b %d %Y %I:%M %p')
         self.info['user_page'] = 'https://twitch.tv/' + self.login
         self.info['view_count'] = '{:,}'.format(self.info['view_count'])

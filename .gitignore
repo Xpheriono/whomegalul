@@ -72,6 +72,8 @@ db.sqlite3
 db.sqlite3-journal
 settings.py
 static/admin/
+*.db
+migrations
 
 # Flask stuff:
 instance/

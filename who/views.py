@@ -10,11 +10,13 @@ from django.contrib import messages
 from .models import UserInfo
 from .services import TwitchAPI
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('django')
 
 # Landing page
 class IndexView(generic.TemplateView):
     template_name = 'who/index.html'
+
+    
 
 # Search results page
 class ResultsView(generic.DetailView):
@@ -31,7 +33,7 @@ class ResultsView(generic.DetailView):
 # Manage the form submit request
 def verify_query(request):
     q = request.GET.get('q').strip().lower() # query from search-box
-
+    logger.debug('test')
     try:
         q_user = UserInfo.objects.get(login=q)
         return HttpResponseRedirect(reverse('results', kwargs={'login': q}))
@@ -44,3 +46,4 @@ def verify_query(request):
         else:
             messages.error(request, 'Unable to retrieve any results for {}'.format(q))
             return redirect('index')
+    
