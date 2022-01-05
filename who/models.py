@@ -1,6 +1,5 @@
 import logging
 
-from uuid import uuid4
 from datetime import datetime
 
 from django.db import models
@@ -32,31 +31,3 @@ class UserInfo(models.Model):
     
     class Meta:
         verbose_name = "user info"
-
-# not currently in use
-class WhoUser(AbstractBaseUser):
-    uid = models.UUIDField(primary_key=True, max_length=255, default=uuid4)
-    password = None
-
-    USERNAME_FIELD = "uid"
-    REQUIRED_FIELDS = []
-
-    def __str__(self):
-        return self.uid
-
-    class Meta:
-        verbose_name = "custom auth user"
-        #db_table = "auth_user"
-
-# not currently in use
-class OAuthToken(models.Model):
-    user_id = models.OneToOneField(WhoUser, on_delete=models.CASCADE, primary_key=True)
-    token = models.TextField()
-    token_refresh = models.TextField()
-    expires_at = models.DateTimeField(blank=True, null=True)
-
-    def __str__(self):
-        return self.token
-
-    class Meta:
-        verbose_name = "oauth2 token"
