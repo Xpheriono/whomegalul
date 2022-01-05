@@ -16,8 +16,6 @@ logger = logging.getLogger('django')
 class IndexView(generic.TemplateView):
     template_name = 'who/index.html'
 
-    
-
 # Search results page
 class ResultsView(generic.DetailView):
     template_name = 'who/results.html'
@@ -33,7 +31,6 @@ class ResultsView(generic.DetailView):
 # Manage the form submit request
 def verify_query(request):
     q = request.GET.get('q').strip().lower() # query from search-box
-    logger.debug('test')
     try:
         q_user = UserInfo.objects.get(login=q)
         return HttpResponseRedirect(reverse('results', kwargs={'login': q}))

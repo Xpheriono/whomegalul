@@ -3,7 +3,6 @@ import requests
 import os
 
 from django.core.cache import cache
-from requests.api import request # 'default' cache from settings
 
 logger = logging.getLogger('twitchLog')
 
@@ -14,24 +13,22 @@ class TwitchAPI:
     def __init__(self):
         logger.info('Twitch connection initiating')
 
-    def __authorize_client(self, force=False):
+    # Authorize the client with Twitch API if no existing access token
+    def __authorize_client(self):
         data = {
             'client_id': os.environ['CLIENT_ID_WHO'],
             'client_secret': os.environ['SECRET_WHO'],
             'grant_type': 'client_credentials'
         }
-        logger.info('authorizing client...')
+        logger.info('Authorizing client...')
         try:
             rsp = requests.post(self.id_url, data=data)
             rsp.raise_for_status()
-            if self.cache_token(rsp.json()): # token was cached successfully
-                logger.info('Token {} with {} seconds left was successfully cached'.format(
-                    cache.get('access_token')['token'],
-                    cache.get('access_token')['expires_in']
-                ))
+            if self.__cache_token(rsp.json()): # token was cached successfully
+                logger.info('Client authorized and access token cached')
                 return True
             else:
-                logger.error('There was an error authenticating')
+                logger.error('There was an error caching the access token')
         except requests.exceptions.Timeout as error:
             logger.error('Timed out while waiting for Twitch response')
         except requests.exceptions.RequestException as error:
@@ -42,27 +39,25 @@ class TwitchAPI:
 
         return False
 
-    def __handle_auth_error(self):
-        logger.error('auth error') # not sure how to handle yet, probably can't do much
-        pass
-
-    def cache_token(self, rsp_json, force=False):
+    # Cache the access token using Redis
+    def __cache_token(self, rsp_json):
         token = {
             'token': rsp_json['access_token'],
             'expires_in': rsp_json['expires_in']
         }
-        if force:
-            cache.set('access_token', token) # overwrites existing token
-            return True
-        return cache.add('access_token', token) # returns True if token does not exist already
+        timeout = int(rsp_json['expires_in'])
+        return cache.set('access_token', token, timeout=timeout)
 
-    def get_user(self, username):
+    def __get_token(self):
         # Retrieve the access token from cache and verify client is authorized
-        tokens = cache.get('access_token')
-        if not tokens:
-            if not self.__authorize_client():
-                self.__handle_auth_error()
-        token = tokens['token']
+        token = cache.get('access_token')
+        if token is None:
+            self.__authorize_client()
+        return cache.get('access_token')
+
+    # Retrieve a given twitch user by their username
+    def get_user(self, username):
+        token = self.__get_token()['token']
 
         # Build the HTTP request
         url = self.helix_url + 'users/'
