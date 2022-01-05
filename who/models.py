@@ -6,7 +6,7 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('django')
 
 # UserInfo model to store results from Twitch API get user info calls
 class UserInfo(models.Model):
@@ -25,7 +25,6 @@ class UserInfo(models.Model):
         self.info['user_page'] = 'https://twitch.tv/' + self.login
         self.info['view_count'] = '{:,}'.format(self.info['view_count'])
         
-        logger.debug('saving info as {}'.format(self.info))
         super().save(*args, **kwargs)
 
     def __str__(self):

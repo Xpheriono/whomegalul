@@ -3,7 +3,7 @@ import logging
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.views import generic
 from django.contrib import messages
 
